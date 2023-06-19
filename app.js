@@ -1,3 +1,5 @@
+require("dotenv").config();
+const mongoose = require("mongoose");
 var createError = require("http-errors");
 var express = require("express");
 var path = require("path");
@@ -9,6 +11,8 @@ var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 
 var app = express();
+
+mongoose.connect(process.env.MONGODB_PASSWORD);
 
 app.use(logger("dev"));
 app.use(express.json());
