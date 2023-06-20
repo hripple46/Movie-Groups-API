@@ -3,13 +3,20 @@ var router = express.Router();
 const MessageSchema = require("../models/message.js");
 
 /* GET home page. */
-router.get("/api/test", function (req, res, next) {
-  res.json({ message: "hooray! Henry's very first api!" });
+router.get("/api/message", async function (req, res, next) {
+  const Messages = await MessageSchema.find();
+
+  if (!Messages) {
+    res.status(404).send("No messages found");
+  } else {
+    res.json(Messages);
+  }
 });
-router.post("/api/message", function (req, res, next) {
+router.post("/api/message", async function (req, res, next) {
   const message = new MessageSchema({
     text: req.body.text,
   });
+  await message.save();
 });
 
 module.exports = router;
