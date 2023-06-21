@@ -3,7 +3,6 @@ var router = express.Router();
 const MessageSchema = require("../models/message.js");
 const User = require("../models/user.js");
 
-/* GET home page. */
 router.get("/api/message", async function (req, res, next) {
   const Messages = await MessageSchema.find();
 
