@@ -4,41 +4,33 @@ const User = require("../models/user.js");
 var express = require("express");
 var router = express.Router();
 
-passport.use(
-  new LocalStrategy(async function (username, password, done) {
-    console.log(username, password);
-    const user = await User.findOne({ username: username });
-    if (!user) {
-      return done(null, false, { message: "Incorrect username." });
-    }
-    if (user.password !== password) {
-      console.log("incorrect password");
-      return done(null, false, { message: "Incorrect password." });
-    } else {
-      console.log("correct password");
-      return done(null, user);
-    }
-  })
-);
-
-passport.serializeUser(function (user, done) {
-  console.log("serializing");
-  done(null, user.id);
+router.get("/api/users/isAuthenticated", function (req, res) {
+  if (req.session && req.session.user) {
+    console.log("Is Active");
+    res.send({ isAuthenticated: "true" });
+  } else {
+    console.log("Is Not Active");
+    res.send({ isAuthenticated: "false" });
+  }
 });
 
-passport.deserializeUser(function (id, done) {
-  User.findById(id, function (err, user) {
-    console.log("deserializing");
-    done(err, user);
+router.post("/login", async function (req, res, next) {
+  console.log(req.body);
+  const user = await User.findOne({ username: req.body.username });
+  if (user) {
+    res.send('{"message": "Success"}');
+  } else {
+    res.send('{"message": "User Not Found"}');
+  }
+});
+
+router.post("/api/users/signup", async function (req, res, next) {
+  const user = new User({
+    username: req.body.username,
+    password: req.body.password,
   });
+  await user.save();
+  res.status(201).send();
 });
-
-router.post(
-  "/api/users/login",
-  passport.authenticate("local", {
-    successRedirect: "/api/message",
-    failureRedirect: "api/user/login",
-  })
-);
 
 module.exports = router;

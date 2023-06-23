@@ -7,15 +7,18 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var cors = require("cors");
 const session = require("express-session");
-const passport = require("passport");
+
+const User = require("./models/user");
 
 var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/users");
+
 var authRouter = require("./routes/auth");
 
 var app = express();
 
 mongoose.connect(process.env.MONGODB_PASSWORD);
+
+app.use(cors());
 
 app.use(logger("dev"));
 app.use(express.json());
@@ -23,20 +26,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use(
-  session({
-    secret: "Cat",
-    resave: false,
-    saveUninitialized: false,
-  })
-);
-app.use(passport.initialize());
-app.use(passport.session());
-
-app.use(cors());
-app.use("/", indexRouter);
-app.use("/users", usersRouter);
-app.use("/", authRouter);
+app.use("/api/message", indexRouter);
+app.use("/api/users", authRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
