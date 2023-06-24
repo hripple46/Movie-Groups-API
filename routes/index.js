@@ -33,6 +33,7 @@ router.post("/", verifyToken, async (req, res, next) => {
 function verifyToken(req, res, next) {
   //get auth header
   const bearerHeader = req.headers["authorization"];
+  console.log(bearerHeader);
 
   if (typeof bearerHeader !== "undefined") {
     //split header
