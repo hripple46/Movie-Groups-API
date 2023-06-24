@@ -1,8 +1,7 @@
-const passport = require("passport");
-const LocalStrategy = require("passport-local").Strategy;
 const User = require("../models/user.js");
 var express = require("express");
 var router = express.Router();
+const jwt = require("jsonwebtoken");
 
 router.get("/api/users/isAuthenticated", function (req, res) {
   if (req.session && req.session.user) {
@@ -18,7 +17,13 @@ router.post("/login", async function (req, res, next) {
   console.log(req.body);
   const user = await User.findOne({ username: req.body.username });
   if (user) {
-    res.send('{"message": "Success"}');
+    if (req.body.password === user.password) {
+      jwt.sign({ user }, "secretkey", (err, token) => {
+        res.json({ token });
+      });
+    } else {
+      res.send("Incorrect Password");
+    }
   } else {
     res.send('{"message": "User Not Found"}');
   }

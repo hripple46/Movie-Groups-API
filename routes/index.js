@@ -2,7 +2,6 @@ var express = require("express");
 var router = express.Router();
 const MessageSchema = require("../models/message.js");
 const User = require("../models/user.js");
-const passport = require("passport");
 
 router.get("/", async function (req, res, next) {
   const Messages = await MessageSchema.find();
