@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 const MessageSchema = require("../models/message.js");
 const User = require("../models/user.js");
+const jwt = require("jsonwebtoken");
 
 router.get("/", async function (req, res, next) {
   const Messages = await MessageSchema.find();
@@ -15,12 +16,36 @@ router.get("/", async function (req, res, next) {
     });
   }
 });
-router.post("/", async function (req, res, next) {
-  const message = new MessageSchema({
-    text: req.body.text,
+router.post("/", verifyToken, async (req, res, next) => {
+  jwt.verify(req.token, "secretkey", (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      const username = authData.user.username;
+      res.json({
+        message: "Message posted",
+        username,
+      });
+    }
   });
-  await message.save();
-  res.status(201).send();
 });
+
+function verifyToken(req, res, next) {
+  //get auth header
+  const bearerHeader = req.headers["authorization"];
+
+  if (typeof bearerHeader !== "undefined") {
+    //split header
+    const bearer = bearerHeader.split(" ");
+    //get token
+    const bearerToken = bearer[1];
+    //set token
+    req.token = bearerToken;
+    //next middleware
+    next();
+  } else {
+    res.sendStatus(403);
+  }
+}
 
 module.exports = router;
