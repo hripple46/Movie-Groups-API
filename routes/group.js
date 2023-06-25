@@ -24,6 +24,29 @@ router.post("/", verifyToken, async function (req, res, next) {
     }
   });
 });
+router.post("/join", verifyToken, async function (req, res, next) {
+  jwt.verify(req.token, "secretkey", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      const username = authData.user.username;
+      const user = await User.findOne({ username: username });
+      const reqGroup = await Group.findOne({ name: req.body.joinGroupName });
+      console.log("Join This Group" + reqGroup);
+      const currentUsers = reqGroup.activeUsers;
+
+      for (let i = 0; i < currentUsers.length; i++) {
+        if (currentUsers[i].toString() === user._id.toString()) {
+          return res.json("User already belongs to group");
+        }
+      }
+
+      reqGroup.pendingUsers.push(user.id);
+      await reqGroup.save();
+      res.json("Request to join group sent");
+    }
+  });
+});
 
 function verifyToken(req, res, next) {
   //get auth header
