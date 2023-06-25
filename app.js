@@ -14,6 +14,8 @@ var indexRouter = require("./routes/index");
 
 var authRouter = require("./routes/auth");
 
+const groupRouter = require("./routes/group");
+
 var app = express();
 
 mongoose.connect(process.env.MONGODB_PASSWORD);
@@ -28,11 +30,11 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api/message", indexRouter);
 app.use("/api/users", authRouter);
-
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  next(createError(404));
-});
+app.use("/api/groups", groupRouter);
+app // catch 404 and forward to error handler
+  .use(function (req, res, next) {
+    next(createError(404));
+  });
 
 // error handler
 app.use(function (err, req, res, next) {
