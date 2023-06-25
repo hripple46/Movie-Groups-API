@@ -11,6 +11,7 @@ router.post("/", verifyToken, async function (req, res, next) {
     } else {
       const username = authData.user.username;
       const user = await User.findOne({ username: username });
+      console.log("Here's the REQ BODY" + req.body.groupName);
       const group = new Group({
         name: req.body.groupName,
         admin: user._id,
