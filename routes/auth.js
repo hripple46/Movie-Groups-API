@@ -9,7 +9,7 @@ router.post("/login", async function (req, res, next) {
   if (user) {
     if (req.body.password === user.password) {
       jwt.sign({ user }, "secretkey", (err, token) => {
-        res.json({ token });
+        res.json({ token, user });
       });
     } else {
       res.send("Incorrect Password");

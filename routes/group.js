@@ -8,10 +8,16 @@ router.post("/", verifyToken, async function (req, res, next) {
   jwt.verify(req.token, "secretkey", async (err, authData) => {
     if (err) {
       res.sendStatus(403);
+      return;
     } else {
       const username = authData.user.username;
       const user = await User.findOne({ username: username });
       console.log("Here's the REQ BODY" + req.body.groupName);
+      const checkGroup = await Group.findOne({ name: req.body.groupName });
+      if (checkGroup) {
+        res.sendStatus(403);
+        return;
+      }
       const group = new Group({
         name: req.body.groupName,
         admin: user._id,
