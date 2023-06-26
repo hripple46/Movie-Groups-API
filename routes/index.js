@@ -21,9 +21,11 @@ router.post("/", verifyToken, async (req, res, next) => {
     if (err) {
       res.sendStatus(403);
     } else {
+      const user = authData.user;
       const username = authData.user.username;
       res.json({
         message: "Message posted",
+        user,
         username,
       });
     }
