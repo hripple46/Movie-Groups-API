@@ -72,5 +72,37 @@ function verifyToken(req, res, next) {
     res.sendStatus(403);
   }
 }
+router.post("/pendingusers", verifyToken, async (req, res, next) => {
+  jwt.verify(req.token, "secretkey", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      const groups = req.body;
+      console.log(req.body);
+
+      // Assign an anonymous async function to getUsers variable
+      const getUsers = async () => {
+        // Use map instead of forEach to create an array of promises
+        const groupPromises = groups.map((element) =>
+          Group.findOne({ _id: `${element}` })
+        );
+        // Wait for all promises to resolve
+        const pendingUsers = await Promise.all(groupPromises);
+        // Log the results
+        pendingUsers.forEach((group) => console.log(group.pendingusers));
+        return pendingUsers;
+      };
+
+      // Call getUsers and respond to the client
+      try {
+        const pendingUsers = await getUsers();
+        res.status(200).json({ pendingUsers });
+      } catch (err) {
+        console.error(err);
+        res.sendStatus(500);
+      }
+    }
+  });
+});
 
 module.exports = router;
