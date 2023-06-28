@@ -5,16 +5,9 @@ const User = require("../models/user.js");
 const jwt = require("jsonwebtoken");
 
 router.get("/", async function (req, res, next) {
-  const Messages = await MessageSchema.find();
-
-  if (!Messages) {
-    res.status(404).send("No messages found");
-  } else {
-    res.json({
-      messages: Messages,
-      user: req.user,
-    });
-  }
+  res.json({
+    user: req.user,
+  });
 });
 router.post("/", verifyToken, async (req, res, next) => {
   jwt.verify(req.token, "secretkey", (err, authData) => {
@@ -24,7 +17,6 @@ router.post("/", verifyToken, async (req, res, next) => {
       const user = authData.user;
       const username = authData.user.username;
       res.json({
-        message: "Message posted",
         user,
         username,
       });

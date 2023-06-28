@@ -89,6 +89,7 @@ router.post("/pendingusers", verifyToken, async (req, res, next) => {
         // Wait for all promises to resolve
         const pendingUsers = await Promise.all(groupPromises);
         // Log the results
+        console.log("groups: " + pendingUsers);
         pendingUsers.forEach((group) => console.log(group.pendingusers));
         return pendingUsers;
       };
@@ -102,6 +103,16 @@ router.post("/pendingusers", verifyToken, async (req, res, next) => {
         res.sendStatus(500);
       }
     }
+  });
+});
+router.post("/pendingusers/details", verifyToken, async (req, res, next) => {
+  // let resultArray = [];
+  jwt.verify(req.token, "secretkey", async (err, authData) => {
+    req.body.forEach(async (element) => {
+      console.log("Req Body: ", element);
+    });
+
+    res.sendStatus(200);
   });
 });
 
