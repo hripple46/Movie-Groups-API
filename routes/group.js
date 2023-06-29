@@ -106,13 +106,22 @@ router.post("/pendingusers", verifyToken, async (req, res, next) => {
   });
 });
 router.post("/pendingusers/details", verifyToken, async (req, res, next) => {
-  // let resultArray = [];
+  let resultArray = [];
   jwt.verify(req.token, "secretkey", async (err, authData) => {
-    req.body.forEach(async (element) => {
+    for (const element of req.body) {
       console.log("Req Body: ", element);
-    });
-
-    res.sendStatus(200);
+      const group = await Group.findById(element.group);
+      const resultObject = { Group: group.name, Users: [] };
+      for (const user of element.users) {
+        const userDoc = await User.findById(user);
+        const username = userDoc.username;
+        resultObject.Users.push(username);
+        console.log("Username: " + username);
+      }
+      resultArray.push(resultObject);
+    }
+    console.log("Result Array: " + resultArray);
+    res.json(resultArray);
   });
 });
 
